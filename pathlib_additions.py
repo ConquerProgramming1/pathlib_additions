@@ -1,25 +1,44 @@
 from pathlib import Path
 
+
 def write_content(self, content, encoding='utf-8', errors=None):
-    ''' Writes content to the Path's path, creating any parent directories as necessary.
-        This method is added to the Path class by the pathlib_additions module.'''
+    """ Writes text content to the Path's path, creating any parent directories as necessary.
+        This method is added to the Path class by the pathlib_additions module."""
     self.parent.mkdir(parents=True, exist_ok=True)
     self.write_text(content, encoding, errors)
 
+
+def write_data(self, data):
+    """ Writes byte data to the Path's path, creating any parent directories as necessary.
+        This method is added to the Path class by the pathlib_additions module."""
+    self.parent.mkdir(parents=True, exist_ok=True)
+    self.write_bytes(data)
+
+
 def directories(self):
-    ''' Returns an iterator of directories in this path.
-        This method is added to the Path class by the pathlib_additions module.'''
+    """ Returns an iterator of directories in this path.
+        This method is added to the Path class by the pathlib_additions module."""
     return filter(Path.is_dir, self.iterdir())
 
+
 def files(self):
-    ''' Returns a list of files in this path.
-        This method is added to the Path class by the pathlib_additions module.'''
+    """ Returns an iterator of files in this path.
+        This method is added to the Path class by the pathlib_additions module."""
     return filter(Path.is_file, self.iterdir())
 
+
+def files_with_extension(self, extension):
+    """ Returns a list of files in this path with the specified extension.
+        This method is added to the Path class by the pathlib_additions module."""
+    if not extension.startswith('.'):
+        extension = '.' + extension
+    return [path for path in self.iterdir() if path.suffix == extension]
+
+
 def copy(self, destination):
-    ''' Copies this path to the destination, which can be a Path object or string.
+    """ Copies this path to the destination, which can be a Path object or string.
         Creates the destination directory if necessary.
-        This method is added to the Path class by the pathlib_additions module.'''
+        This method is added to the Path class by the pathlib_additions module."""
     import shutil
     if isinstance(destination, str):
         output = Path(destination)
@@ -29,17 +48,19 @@ def copy(self, destination):
         raise ValueError('Expected string or Path as destination')
     output.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(self.absolute(), output.absolute())
-        
+
+
 def walk(self, path_filter=None):
-    ''' Returns an iterator of Paths in this path.
+    """ Returns an iterator of Paths in this path.
         If a path_filter function is specified, it is called for each item.
-        This method is added to the Path class by the pathlib_additions module.'''
+        This method is added to the Path class by the pathlib_additions module."""
     return filter(path_filter, self.glob('**/*'))
 
+
 def rmtree(self):
-    ''' Removes all items under this path, including the path itself.
+    """ Removes all items under this path, including the path itself.
         Does *not* raise an exception if the path doesn't exist.
-        This method is added to the Path class by the utilities module.'''
+        This method is added to the Path class by the utilities module."""
     # Directories must be empty to delete, so first delete all files.
     for item in self.glob('**/*'):
         if not item.is_dir():
@@ -54,15 +75,20 @@ def rmtree(self):
     except:
         pass
 
+
 Path.write_content = write_content
+Path.write_data = write_data
 Path.directories = directories
 Path.files = files
+Path.files_with_extension = files_with_extension
 Path.copy = copy
 Path.walk = walk
 Path.rmtree = rmtree
 
+
 def main():
     print(dir(Path))
+
 
 if __name__ == '__main__':
     main()

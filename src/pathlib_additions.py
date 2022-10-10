@@ -60,7 +60,7 @@ def walk(self, path_filter=None):
 def rmtree(self):
     """ Removes all items under this path, including the path itself.
         Does *not* raise an exception if the path doesn't exist.
-        This method is added to the Path class by the utilities module."""
+        This method is added to the Path class by the pathlib_additions module."""
     # Directories must be empty to delete, so first delete all files.
     for item in self.glob('**/*'):
         if not item.is_dir():
